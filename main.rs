@@ -91,6 +91,7 @@ fn new_task(json: &mut JsonValue){
 
     append_to_file(json, &name, &description);
 }
+
 fn complete_task(json: &mut JsonValue, task_id: usize){
     let mut task_to_complete: Option<JsonValue> = None;
 
