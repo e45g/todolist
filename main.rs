@@ -1,18 +1,36 @@
 use dialoguer::{theme::ColorfulTheme, FuzzySelect, Input, Confirm};
-use std::io::{self, Write};
+use std::io::{Write};
 use std::time::{SystemTime, UNIX_EPOCH};
 use json::{object, JsonValue};
 use std::fs;
+//use colored::Colorize;
+use dirs;
+use std::path::PathBuf;
+
+fn get_tasks_path() -> PathBuf{
+    let path = dirs::home_dir().unwrap()
+            .join(".todolist")
+            .join("tasks.json");
+
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).expect("Failed to create needed directories");
+    }
+    if !path.exists() {
+        fs::write(&path, "{\"tasks\":[], \"completed\":[]}").expect("Failed to create tasks.json");
+    }
+    
+    path
+}
 
 fn load_from_file() -> Result<JsonValue, json::Error>{
-    let content = fs::read_to_string("tasks.json").expect("Error reading tasks.json");
+    let content = fs::read_to_string(get_tasks_path()).expect("Error reading tasks.json");
     let json = json::parse(&content)?;
     Ok(json)
 }
 
 fn save_to_file(json: &mut JsonValue){
     let data = json::stringify(json.clone());
-    let mut f = fs::File::create("tasks.json").expect("Unable to a create file.");
+    let mut f = fs::File::create(get_tasks_path()).expect("Unable to a create file.");
     f.write_all(data.as_bytes()).expect("Error writing data.");
 }
 
@@ -141,6 +159,7 @@ fn select(json: &mut JsonValue){
 }
 
 fn main() {
+    get_tasks_path();
     loop {
         let mut json: JsonValue = match load_from_file() {
             Ok(t) => t,
