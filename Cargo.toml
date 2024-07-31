@@ -1,0 +1,12 @@
+[package]
+name = "todolist"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dialoguer = { version = "0.11.0", features = ["fuzzy-select"] }
+json = "0.12.4"
+
+[[bin]]
+name = "todolist"
+path = "main.rs"
